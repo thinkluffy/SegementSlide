@@ -24,6 +24,7 @@ open class SegementSlideViewController: UIViewController {
     internal var safeAreaTopConstraint: NSLayoutConstraint?
     internal var parentKeyValueObservation: NSKeyValueObservation?
     internal var childKeyValueObservation: NSKeyValueObservation?
+    internal var childContentSizeObservation: NSKeyValueObservation?
     internal var innerBouncesType: BouncesType = .parent
     internal var canParentViewScroll: Bool = true
     internal var canChildViewScroll: Bool = false
@@ -41,10 +42,16 @@ open class SegementSlideViewController: UIViewController {
     }
     public var headerStickyHeight: CGFloat {
         let headerHeight = segementSlideHeaderView.frame.height.rounded(.up)
-        if edgesForExtendedLayout.contains(.top) {
-            return headerHeight - topLayoutLength
-        } else {
+//        if edgesForExtendedLayout.contains(.top) {
+//            return headerHeight - topLayoutLength
+//        } else {
+//            return headerHeight
+//        }
+        if keepSafeAreaTop {
             return headerHeight
+            
+        } else {
+            return headerHeight - topLayoutLength
         }
     }
     public var contentViewHeight: CGFloat {
@@ -60,6 +67,10 @@ open class SegementSlideViewController: UIViewController {
     
     open var bouncesType: BouncesType {
         return .parent
+    }
+    
+    open var keepSafeAreaTop: Bool {
+        return true
     }
     
     open var headerView: UIView? {
@@ -169,6 +180,7 @@ open class SegementSlideViewController: UIViewController {
     deinit {
         parentKeyValueObservation?.invalidate()
         childKeyValueObservation?.invalidate()
+        childContentSizeObservation?.invalidate()
         NotificationCenter.default.removeObserver(self, name: SegementSlideContentView.willClearAllReusableViewControllersNotification, object: nil)
         #if DEBUG
         debugPrint("\(type(of: self)) deinit")

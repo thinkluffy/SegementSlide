@@ -77,7 +77,6 @@ public class SegementSlideSwitcherView: UIView {
     /// otherwise, none of them will be selected.
     /// However, if an item was previously selected, it will be reSelected.
     public func reloadData() {
-        selectedIndex = nil
         for titleButton in titleButtons {
             titleButton.removeFromSuperview()
             titleButton.frame = .zero
@@ -103,11 +102,13 @@ public class SegementSlideSwitcherView: UIView {
         }
         guard !titleButtons.isEmpty else { return }
         scrollView.addSubview(indicatorView)
+        scrollView.sendSubviewToBack(indicatorView)
         indicatorView.layer.masksToBounds = true
         indicatorView.layer.cornerRadius = innerConfig.indicatorHeight/2
         indicatorView.backgroundColor = innerConfig.indicatorColor
         layoutTitleButtons()
         reloadBadges()
+        updateSelectedIndex()
     }
     
     /// reload all badges in `SegementSlideSwitcherView`
@@ -215,13 +216,33 @@ extension SegementSlideSwitcherView {
         let titleButton = titleButtons[index]
         titleButton.setTitleColor(innerConfig.selectedTitleColor, for: .normal)
         titleButton.titleLabel?.font = innerConfig.selectedTitleFont
+        
+        let indicatorFrame: CGRect
+        if innerConfig.indicatorType == .underline {
+            indicatorFrame = CGRect(x: titleButton.frame.origin.x + (titleButton.bounds.width - innerConfig.indicatorWidth)/2,
+                                    y: frame.height - innerConfig.indicatorHeight,
+                                    width: innerConfig.indicatorWidth,
+                                    height: innerConfig.indicatorHeight)
+            
+        } else if innerConfig.indicatorType == .aroundButton {
+            indicatorFrame = CGRect(x: titleButton.frame.origin.x - 15,
+                                    y: (frame.height - innerConfig.indicatorHeight) / 2,
+                                    width: titleButton.bounds.size.width + 30,
+                                    height: innerConfig.indicatorHeight)
+            
+        } else {
+            fatalError("Unexpected indicatorType: \(innerConfig.indicatorType)")
+        }
+        
         if animated, indicatorView.frame != .zero {
             UIView.animate(withDuration: 0.25) {
-                self.indicatorView.frame = CGRect(x: titleButton.frame.origin.x+(titleButton.bounds.width-self.innerConfig.indicatorWidth)/2, y: self.frame.height-self.innerConfig.indicatorHeight, width: self.innerConfig.indicatorWidth, height: self.innerConfig.indicatorHeight)
+                self.indicatorView.frame = indicatorFrame
             }
+            
         } else {
-            indicatorView.frame = CGRect(x: titleButton.frame.origin.x+(titleButton.bounds.width-innerConfig.indicatorWidth)/2, y: frame.height-innerConfig.indicatorHeight, width: innerConfig.indicatorWidth, height: innerConfig.indicatorHeight)
+            indicatorView.frame = indicatorFrame
         }
+        
         if case .segement = innerConfig.type {
             var offsetX = titleButton.frame.origin.x-(scrollView.bounds.width-titleButton.bounds.width)/2
             if offsetX < 0 {

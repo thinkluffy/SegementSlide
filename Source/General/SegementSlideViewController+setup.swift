@@ -86,6 +86,8 @@ extension SegementSlideViewController {
         }
         childKeyValueObservation?.invalidate()
         childKeyValueObservation = nil
+        childContentSizeObservation?.invalidate()
+        childContentSizeObservation = nil
     }
     
     internal func setupBounces() {
@@ -118,9 +120,11 @@ extension SegementSlideViewController {
         
         segementSlideHeaderView.translatesAutoresizingMaskIntoConstraints = false
         if segementSlideHeaderView.topConstraint == nil {
-            segementSlideHeaderView.topConstraint = segementSlideHeaderView.topAnchor.constraint(equalTo: segementSlideScrollView.topAnchor, constant: topLayoutLength)
+            segementSlideHeaderView.topConstraint = segementSlideHeaderView.topAnchor.constraint(equalTo: segementSlideScrollView.topAnchor,
+                                                                                                 constant: keepSafeAreaTop ? topLayoutLength : 0)
+
         } else {
-            if segementSlideHeaderView.topConstraint?.constant != topLayoutLength {
+            if keepSafeAreaTop && segementSlideHeaderView.topConstraint?.constant != topLayoutLength {
                 segementSlideHeaderView.topConstraint?.constant = topLayoutLength
             }
         }

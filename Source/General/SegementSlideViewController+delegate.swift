@@ -57,6 +57,7 @@ extension SegementSlideViewController: SegementSlideContentDelegate {
             segementSlideSwitcherView.selectSwitcher(at: index, animated: animated)
         }
         childKeyValueObservation?.invalidate()
+        childContentSizeObservation?.invalidate()
         guard let childViewController = segementSlideContentView.dequeueReusableViewController(at: index) else { return }
         defer {
             didSelectContentViewController(at: index)
@@ -68,6 +69,21 @@ extension SegementSlideViewController: SegementSlideContentDelegate {
             self.childScrollViewDidScroll(scrollView)
         })
         childKeyValueObservation = keyValueObservation
+
+        // Fix a Bug
+        //
+        // [Scenario]
+        // For short content, scrollView can scroll up but never scroll down
+        //
+        // [Solution]
+        // Add an observation to observe contentSize. If bound.height >= contentSize.height (child scroll view can not scroll), disable
+        // parent's scrollable.
+        
+        segementSlideScrollView.isScrollEnabled = scrollView.bounds.height < scrollView.contentSize.height
+        
+        let contentSizeObservation = scrollView.observe(\.contentSize, options: [.new, .old], changeHandler: { [weak self] scrollView, change in
+            self?.segementSlideScrollView.isScrollEnabled = scrollView.bounds.height < scrollView.contentSize.height
+        })
+        childContentSizeObservation = contentSizeObservation
     }
-    
 }

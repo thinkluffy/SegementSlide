@@ -8,6 +8,11 @@
 
 import UIKit
 
+public enum SwitcherIndicatorType {
+    case underline
+    case aroundButton
+}
+
 public struct SegementSlideSwitcherConfig {
     
     public static let shared = SegementSlideSwitcherConfig()
@@ -19,6 +24,8 @@ public struct SegementSlideSwitcherConfig {
     public var selectedTitleFont: UIFont
     public var normalTitleColor: UIColor
     public var selectedTitleColor: UIColor
+    public var indicatorType: SwitcherIndicatorType
+    /// Only work for .underline indicatorType. In .aroundButton type, indicator width will automatically wrap the button
     public var indicatorWidth: CGFloat
     public var indicatorHeight: CGFloat
     public var indicatorColor: UIColor
@@ -34,6 +41,7 @@ public struct SegementSlideSwitcherConfig {
                 selectedTitleFont: UIFont = UIFont.systemFont(ofSize: 15, weight: .medium),
                 normalTitleColor: UIColor = UIColor.gray,
                 selectedTitleColor: UIColor = UIColor.darkGray,
+                indicatorType: SwitcherIndicatorType = .underline,
                 indicatorWidth: CGFloat = 30,
                 indicatorHeight: CGFloat = 2,
                 indicatorColor: UIColor = UIColor.darkGray,
@@ -48,6 +56,7 @@ public struct SegementSlideSwitcherConfig {
         self.selectedTitleFont = selectedTitleFont
         self.normalTitleColor = normalTitleColor
         self.selectedTitleColor = selectedTitleColor
+        self.indicatorType = indicatorType
         self.indicatorWidth = indicatorWidth
         self.indicatorHeight = indicatorHeight
         self.indicatorColor = indicatorColor
