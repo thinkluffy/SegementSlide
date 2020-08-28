@@ -10,9 +10,9 @@ import UIKit
 
 extension SegementSlideViewController {
     
-    internal func parentScrollViewDidScroll(_ scrollView: UIScrollView) {
+    internal func parentScrollViewDidScroll(_ scrollView: UIScrollView, scrollUp: Bool) {
         defer {
-            scrollViewDidScroll(scrollView, isParent: true)
+            scrollViewDidScroll(scrollView, isParent: true, scrollUp: scrollUp)
         }
         let parentContentOffsetY = segementSlideScrollView.contentOffset.y
         switch innerBouncesType {
@@ -38,8 +38,20 @@ extension SegementSlideViewController {
                 return
             } else if parentContentOffsetY >= headerStickyHeight {
                 segementSlideScrollView.contentOffset.y = headerStickyHeight
-                canParentViewScroll = false
-                canChildViewScroll = true
+                // Fix a Bug
+                //
+                // [Scenario]
+                // For short content, scrollView can scroll up but never scroll down
+                //
+                // [Solution]
+                // For short content scrollView, after set canParentViewScroll to false and canChildViewScroll to true,
+                // content scrollView will never scroll, the ui can not scroll down any more.
+                // Only set canParentViewScroll to false when content scroll view is long enouth
+                guard let childScrollView = currentSegementSlideContentViewController?.scrollView else { return }
+                if childScrollView.bounds.height < childScrollView.contentSize.height {
+                    canParentViewScroll = false
+                    canChildViewScroll = true
+                }
                 return
             } else if parentContentOffsetY <= 0 {
                 segementSlideScrollView.contentOffset.y = 0
@@ -61,9 +73,9 @@ extension SegementSlideViewController {
         resetChildViewControllerContentOffsetY()
     }
     
-    internal func childScrollViewDidScroll(_ childScrollView: UIScrollView) {
+    internal func childScrollViewDidScroll(_ childScrollView: UIScrollView, scrollUp: Bool) {
         defer {
-            scrollViewDidScroll(childScrollView, isParent: false)
+            scrollViewDidScroll(childScrollView, isParent: false, scrollUp: scrollUp)
         }
         let parentContentOffsetY = segementSlideScrollView.contentOffset.y
         let childContentOffsetY = childScrollView.contentOffset.y

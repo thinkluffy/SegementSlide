@@ -66,24 +66,8 @@ extension SegementSlideViewController: SegementSlideContentDelegate {
         let keyValueObservation = scrollView.observe(\.contentOffset, options: [.new, .old], changeHandler: { [weak self] (scrollView, change) in
             guard let self = self else { return }
             guard change.newValue != change.oldValue else { return }
-            self.childScrollViewDidScroll(scrollView)
+            self.childScrollViewDidScroll(scrollView, scrollUp: change.newValue?.y ?? 0 > change.oldValue?.y ?? 0)
         })
         childKeyValueObservation = keyValueObservation
-
-        // Fix a Bug
-        //
-        // [Scenario]
-        // For short content, scrollView can scroll up but never scroll down
-        //
-        // [Solution]
-        // Add an observation to observe contentSize. If bound.height >= contentSize.height (child scroll view can not scroll), disable
-        // parent's scrollable.
-        
-        segementSlideScrollView.isScrollEnabled = scrollView.bounds.height < scrollView.contentSize.height
-        
-        let contentSizeObservation = scrollView.observe(\.contentSize, options: [.new, .old], changeHandler: { [weak self] scrollView, change in
-            self?.segementSlideScrollView.isScrollEnabled = scrollView.bounds.height < scrollView.contentSize.height
-        })
-        childContentSizeObservation = contentSizeObservation
     }
 }

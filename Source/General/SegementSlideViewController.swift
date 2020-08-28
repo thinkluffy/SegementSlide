@@ -110,11 +110,15 @@ open class SegementSlideViewController: UIViewController {
         return nil
     }
     
-    open func scrollViewDidScroll(_ scrollView: UIScrollView, isParent: Bool) {
+    open func scrollViewDidScroll(_ scrollView: UIScrollView, isParent: Bool, scrollUp: Bool) {
         
     }
     
     open func didSelectContentViewController(at index: Int) {
+        
+    }
+    
+    open func addConstraintToHeaderView(_ headerView: UIView) {
         
     }
     

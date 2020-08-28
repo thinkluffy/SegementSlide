@@ -118,7 +118,7 @@ open class TransparentSlideViewController: SegementSlideViewController {
         recoverStoredNavigationBarStyle()
     }
     
-    open override func scrollViewDidScroll(_ scrollView: UIScrollView, isParent: Bool) {
+    open override func scrollViewDidScroll(_ scrollView: UIScrollView, isParent: Bool, scrollUp: Bool) {
         guard isParent else { return }
         guard parentScrollView != nil else {
             parentScrollView = scrollView

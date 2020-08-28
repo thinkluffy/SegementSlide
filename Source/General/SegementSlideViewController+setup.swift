@@ -39,6 +39,7 @@ extension SegementSlideViewController {
     
     private func setupSegementSlideHeaderView() {
         segementSlideScrollView.addSubview(segementSlideHeaderView)
+        addConstraintToHeaderView(segementSlideHeaderView)
     }
     
     private func setupSegementSlideContentView() {
@@ -72,7 +73,7 @@ extension SegementSlideViewController {
         parentKeyValueObservation = segementSlideScrollView.observe(\.contentOffset, options: [.initial, .new, .old], changeHandler: { [weak self] (scrollView, change) in
             guard let self = self else { return }
             guard change.newValue != change.oldValue else { return }
-            self.parentScrollViewDidScroll(scrollView)
+            self.parentScrollViewDidScroll(scrollView, scrollUp: change.newValue?.y ?? 0 > change.oldValue?.y ?? 0)
         })
     }
     
